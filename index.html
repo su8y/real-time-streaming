@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <title>Real-Time Streaming Test</title>
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./node_modules/github-markdown-css/github-markdown-light.css" />
+
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-light">
 <div class="container text-center p-4 h-100">
@@ -12,7 +29,7 @@
             Test Real Time Steaming
         </h4>
     </div>
-    <div id="generate-field" class="row border border-1 rounded-2 text-black-50 h-50 p-2">
+    <div id="generate-field" class="markdown-body row border border-1 rounded-2 text-black-50 h-50 p-2">
         Generate Answer ...
     </div>
 
@@ -25,7 +42,7 @@
             const decoder = new TextDecoder("utf-8");
 
             const output = document.querySelector("#generate-field");
-            output.textContent = '';
+            output.innerHTML = '';
 
             while(true){
                 const {done, value} = await reader.read();
@@ -35,7 +52,7 @@
                 messages.forEach((message)=>{
                     if(message.startsWith('data: ')){
                         const token = message.replace('data: ','');
-                        output.textContent += token;
+                        output.innerHTML += token;
                     }
                 })
             }
@@ -56,5 +73,6 @@
 
 <script type="text/javascript" src="./node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
 <script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
