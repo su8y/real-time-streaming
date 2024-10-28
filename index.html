@@ -20,7 +20,7 @@
 <script>
     async function fetchStream(){
         try{
-            const response = await fetch('http://localhost:8080/stream/output');
+            const response = await fetch('http://127.0.0.1:8000/stream/output');
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
 

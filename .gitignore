@@ -1,3 +1,5 @@
 /.idea/
 /real-time-streaming.iml
 /node_modules/
+/stream-fastapi/venv/
+/stream-fastapi/stream-fastapi.iml
