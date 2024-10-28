@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Streaming Test</title>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+</head>
+<body class="bg-light">
+<div class="container text-center p-4 h-100">
+    <div class="row">
+        <h4 id="generate-button" onclick="fetchStream()" class="btn btn-outline-info fw-semibold">
+            Test Real Time Steaming
+        </h4>
+    </div>
+    <div id="generate-field" class="row border border-1 rounded-2 text-black-50 h-50 p-2">
+        Generate Answer ...
+    </div>
+
+</div>
+<script>
+    async function fetchStream(){
+        try{
+            const response = await fetch('http://localhost:8080/stream/output');
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+
+            const output = document.querySelector("#generate-field");
+            output.textContent = '';
+
+            while(true){
+                const {done, value} = await reader.read();
+                if(done) break;
+                const chunk = decoder.decode(value, {stream: true});
+                const messages = chunk.trim().split('\n\n');
+                messages.forEach((message)=>{
+                    if(message.startsWith('data: ')){
+                        const token = message.replace('data: ','');
+                        output.textContent += token;
+                    }
+                })
+            }
+
+            const button = document.querySelector("#generate-button");
+            button.textContent = 'Test Real Time Streaming';
+            button.classList.add('btn-outline-info');
+            button.classList.remove('btn-outline-danger');
+        }catch (e){
+            const button = document.querySelector("#generate-button");
+            button.textContent = 'Test Real Time Streaming ( Not Found API )';
+            button.classList.add('btn-outline-danger');
+            button.classList.remove('btn-outline-info');
+        }
+    }
+</script>
+
+
+<script type="text/javascript" src="./node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+<script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+</body>
+</html>
