@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 @RequestMapping("/stream/reactive")
 public class TestFluxController {
 
-    @GetMapping("/answer")
+    @GetMapping("/output")
     Flux<String> answering(){
         ClassPathResource classPathResource = new ClassPathResource("static/answers/stream.txt");
         try {
@@ -28,7 +28,12 @@ public class TestFluxController {
             Stream<String> lines = reader.lines();
             return Flux.fromStream(lines)
                     .delayElements(Duration.ofMillis(50)) // 50ms 딜레이 추가
-                    .map(line -> "data: " + line + "\n\n"); // SSE 형식으로 각 줄을 준비
+                    .map(line -> "data: " + line + "\n\n")
+                    .doOnCancel(() ->{
+                        System.out.println("Stream Cancled");
+
+                    }); // SSE 형식으로 각 줄을 준비
+
 
         } catch (IOException e) {
             return Flux.just("data: Error occurred: " + e.getMessage() + "\n\n");

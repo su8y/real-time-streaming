@@ -15,6 +15,7 @@
                 <option selected value="http://127.0.0.1:8000/stream/output">fastAPI</option>
                 <option value="http://localhost:8080/stream/rest/output">Spring(RestAPI, StreamingResponseBody.class)</option>
                 <option value="http://localhost:8080/stream/reactive/output">Spring(RestAPI, FLUX.class)</option>
+                <option value="http://localhost:8080/stream/rest/output2">Spring(RestAPI, ResponseBodyEmitter.class)</option>
             </select>
         </div>
         <div class="col-8">
@@ -23,7 +24,7 @@
             </h4>
         </div>
     </div>
-    <div id="generate-field" class="markdown-body row border border-1 rounded-2 text-black-50 h-50 p-2">
+    <div id="generate-field" class="text-start markdown-body row border border-1 rounded-2 text-black-50 h-50 p-2">
         Generate Answer ...
     </div>
 
@@ -33,6 +34,7 @@
     let signal = controller.signal;
 
     const generate_button = document.querySelector("#generate-button");
+    const output = document.querySelector("#generate-field");
     function _complete(){
         generate_button.textContent = 'Test Real Time Streaming';
         generate_button.classList.add('btn-outline-info');
@@ -45,6 +47,7 @@
         controller = new AbortController();
         signal = controller.signal
         if(generate_button.textContent.startsWith("Stop")){
+            output.innerHTML += "요청이중단되었습니다..."
             _complete();
             return;
         }
@@ -57,7 +60,6 @@
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
 
-            const output = document.querySelector("#generate-field");
             output.innerHTML = '';
 
             const now = new Date();
@@ -69,7 +71,9 @@
                 messages.forEach((message)=>{
                     if(message.startsWith('data: ')){
                         const token = message.replace('data: ','');
-                        output.innerHTML += token;
+                        const span = document.createElement("span");
+                        span.textContent = token;
+                        output.appendChild(span);
                     }
                 })
             }
