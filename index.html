@@ -6,28 +6,22 @@
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="./node_modules/github-markdown-css/github-markdown-light.css" />
 
-    <style>
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 45px;
-        }
-
-        @media (max-width: 767px) {
-            .markdown-body {
-                padding: 15px;
-            }
-        }
-    </style>
 </head>
 <body class="bg-light">
 <div class="container text-center p-4 h-100">
     <div class="row">
-        <h4 id="generate-button" onclick="fetchStream()" class="btn btn-outline-info fw-semibold">
-            Test Real Time Steaming
-        </h4>
+        <div class="col-3">
+            <select id="fetchURL" class="form-select">
+                <option selected value="http://127.0.0.1:8000/stream/output">fastAPI</option>
+                <option value="http://localhost:8080/stream/rest/output">Spring(RestAPI, StreamingResponseBody.class)</option>
+
+            </select>
+        </div>
+        <div class="col-8">
+            <h4 id="generate-button" onclick="fetchStream()" class="btn btn-outline-info w-100 fw-semibold">
+                Test Real Time Steaming
+            </h4>
+        </div>
     </div>
     <div id="generate-field" class="markdown-body row border border-1 rounded-2 text-black-50 h-50 p-2">
         Generate Answer ...
@@ -37,7 +31,8 @@
 <script>
     async function fetchStream(){
         try{
-            const response = await fetch('http://127.0.0.1:8000/stream/output');
+            const fetchURLEl = document.querySelector("#fetchURL");
+            const response = await fetch(fetchURLEl.value);
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
 
@@ -46,6 +41,7 @@
 
             while(true){
                 const {done, value} = await reader.read();
+                console.log({done, value});
                 if(done) break;
                 const chunk = decoder.decode(value, {stream: true});
                 const messages = chunk.trim().split('\n\n');
