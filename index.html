@@ -14,7 +14,7 @@
             <select id="fetchURL" class="form-select">
                 <option selected value="http://127.0.0.1:8000/stream/output">fastAPI</option>
                 <option value="http://localhost:8080/stream/rest/output">Spring(RestAPI, StreamingResponseBody.class)</option>
-                <option value="http://localhost:8080/stream/reactive/answer">Spring(RestAPI, FLUX.class)</option>
+                <option value="http://localhost:8080/stream/reactive/output">Spring(RestAPI, FLUX.class)</option>
             </select>
         </div>
         <div class="col-8">
@@ -29,19 +29,40 @@
 
 </div>
 <script>
+    let controller = new AbortController();
+    let signal = controller.signal;
+
+    const generate_button = document.querySelector("#generate-button");
+    function _complete(){
+        generate_button.textContent = 'Test Real Time Streaming';
+        generate_button.classList.add('btn-outline-info');
+        generate_button.classList.remove('btn-outline-danger');
+        generate_button.classList.remove("btn-outline-warning");
+    }
+
     async function fetchStream(){
+        controller.abort();
+        controller = new AbortController();
+        signal = controller.signal
+        if(generate_button.textContent.startsWith("Stop")){
+            _complete();
+            return;
+        }
+
         try{
+            generate_button.classList.add("btn-outline-warning");
+            generate_button.textContent = 'Stop(ㅁ)'
             const fetchURLEl = document.querySelector("#fetchURL");
-            const response = await fetch(fetchURLEl.value);
+            const response = await fetch(fetchURLEl.value,{signal});
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
 
             const output = document.querySelector("#generate-field");
             output.innerHTML = '';
 
+            const now = new Date();
             while(true){
                 const {done, value} = await reader.read();
-                console.log({done, value});
                 if(done) break;
                 const chunk = decoder.decode(value, {stream: true});
                 const messages = chunk.trim().split('\n\n');
@@ -52,16 +73,13 @@
                     }
                 })
             }
+            console.log((new Date() - now)+"ms");
 
-            const button = document.querySelector("#generate-button");
-            button.textContent = 'Test Real Time Streaming';
-            button.classList.add('btn-outline-info');
-            button.classList.remove('btn-outline-danger');
+            _complete();
         }catch (e){
-            const button = document.querySelector("#generate-button");
-            button.textContent = 'Test Real Time Streaming ( Not Found API )';
-            button.classList.add('btn-outline-danger');
-            button.classList.remove('btn-outline-info');
+            generate_button.textContent = 'Test Real Time Streaming ( Not Found API )';
+            generate_button.classList.add('btn-outline-danger');
+            generate_button.classList.remove('btn-outline-info');
         }
     }
 </script>
