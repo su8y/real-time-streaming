@@ -27,7 +27,7 @@ def read_file_line_by_line(filename):
                 if not line:
                     break;
                 yield f"data: {line.strip()}\n\n"
-                time.sleep(200/1000.0)
+                time.sleep(50/1000.0)
     except FileNotFoundError:
         yield "data: Error: The File does not exist"
     except Exception as e:
