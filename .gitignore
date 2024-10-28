@@ -3,3 +3,4 @@
 /node_modules/
 /stream-fastapi/venv/
 /stream-fastapi/stream-fastapi.iml
+/stream-spring/gradle/
