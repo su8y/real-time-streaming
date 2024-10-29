@@ -6,11 +6,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    // TODO: Spring Cloud Gateway server origin으로 Origin Patterns 변경
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
                 .allowedMethods("*")
-                .allowCredentials(true);
+                .allowedHeaders("*");
     }
 }
