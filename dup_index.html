@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Streaming Test</title>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./node_modules/github-markdown-css/github-markdown-light.css" />
+
+</head>
+<body class="bg-light">
+<div class="container text-center p-4 h-100">
+    <div class="row">
+        <div class="col-3">
+            <select id="fetchURL" class="form-select">
+                <option selected value="http://127.0.0.1:8000/stream/output">fastAPI</option>
+                <option value="http://localhost:8080/ss/stream/rest/output">Spring(RestAPI, StreamingResponseBody.class)</option>
+                <option value="http://localhost:8080/ss/stream/reactive/output">Spring(RestAPI, FLUX.class)</option>
+                <option value="http://localhost:8080/ss/stream/rest/output2">Spring(RestAPI, ResponseBodyEmitter.class)</option>
+            </select>
+        </div>
+        <div class="col-8">
+            <h4 id="generate-button" onclick="fetchStream()" class="btn btn-outline-info w-100 fw-semibold">
+                Test Real Time Steaming
+            </h4>
+        </div>
+    </div>
+    <div id="generate-field" class="text-start markdown-body row border border-1 rounded-2 text-black-50 h-50 p-2">
+        Generate Answer ...
+    </div>
+
+</div>
+<script>
+    let controller = new AbortController();
+    let signal = controller.signal;
+
+    const generate_button = document.querySelector("#generate-button");
+    const output = document.querySelector("#generate-field");
+    function _complete(){
+        generate_button.textContent = 'Test Real Time Streaming';
+        generate_button.classList.add('btn-outline-info');
+        generate_button.classList.remove('btn-outline-danger');
+        generate_button.classList.remove("btn-outline-warning");
+    }
+
+    async function fetchStream(){
+        if(generate_button.textContent.startsWith("Stop")){
+            output.innerHTML += "요청이중단되었습니다..."
+            _complete();
+            return;
+        }
+
+        try{
+            generate_button.classList.add("btn-outline-warning");
+            generate_button.textContent = 'Stop(ㅁ)'
+            const fetchURLEl = document.querySelector("#fetchURL");
+            const response = await fetch(fetchURLEl.value,);
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+
+            output.innerHTML = '';
+
+            const now = new Date();
+            while(true){
+                const {done, value} = await reader.read();
+                if(done) break;
+                const chunk = decoder.decode(value, {stream: true});
+                const messages = chunk.trim().split('\n\n');
+                messages.forEach((message)=>{
+                    if(message.startsWith('data: ')){
+                        const token = message.replace('data: ','');
+                        const span = document.createElement("span");
+                        span.textContent = token;
+                        output.appendChild(span);
+                    }
+                })
+            }
+            console.log((new Date() - now)+"ms");
+
+            _complete();
+        }catch (e){
+            generate_button.textContent = 'Test Real Time Streaming ( Not Found API )';
+            generate_button.classList.add('btn-outline-danger');
+            generate_button.classList.remove('btn-outline-info');
+        }
+    }
+</script>
+
+
+<script type="text/javascript" src="./node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+<script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>

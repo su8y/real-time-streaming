@@ -13,11 +13,11 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("before custom global filter");
+        log.info("before custom global filter: request id -> {}",exchange.getRequest().getId());
         Mono<Void> filter = chain.filter(exchange);
         return filter.then(
             Mono.fromRunnable(() -> {
-                log.info("custom global filter completed");
+                log.info("custom global filter completed: request id -> {}",exchange.getRequest().getId());
             })
         );
     }
