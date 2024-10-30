@@ -19,14 +19,25 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String hostAddress = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+        String blackListPrefix = "blacklist-";
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(blackListPrefix + hostAddress))) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+            return exchange.getResponse().setComplete();
+        }
         if (Boolean.TRUE.equals(redisTemplate.hasKey(hostAddress))) {
             exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-            log.info("exist custom global filter: hostAddress -> {}", hostAddress);
+            redisTemplate.opsForValue().increment(hostAddress);
+            Integer i = redisTemplate.opsForValue().get(hostAddress);
+            if (i > 3) {
+                log.warn("BAN : hostAddress -> {}", hostAddress);
+                redisTemplate.opsForValue().set(blackListPrefix + hostAddress, i);
+            }
+            log.info("exist custom global filter: hostAddress -> {} value={}", hostAddress, i);
             return exchange.getResponse().setComplete();
-        } else {
-            redisTemplate.opsForValue().set(hostAddress, 1);
-            log.info("before custom global filter: hostAddress -> {}", hostAddress);
         }
+
+        redisTemplate.opsForValue().increment(hostAddress);
+        log.info("before custom global filter: hostAddress -> {} ", hostAddress);
 
         return chain.filter(exchange).then(
                 Mono.fromRunnable(() -> {
