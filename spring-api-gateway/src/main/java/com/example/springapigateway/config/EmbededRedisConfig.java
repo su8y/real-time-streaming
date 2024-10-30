@@ -19,12 +19,12 @@ public class EmbededRedisConfig {
     }
 
     @PostConstruct
-    public void startRedisServer(){
+    public void startRedisServer() {
         this.redisServer.start();
     }
 
     @PreDestroy
-    public void stopRedisServer(){
+    public void stopRedisServer() {
         this.redisServer.stop();
     }
 }

@@ -43,11 +43,7 @@
     }
 
     async function fetchStream(){
-        if(generate_button.textContent.startsWith("Stop")){
-            output.innerHTML += "요청이중단되었습니다..."
-            _complete();
-            return;
-        }
+
 
         try{
             generate_button.classList.add("btn-outline-warning");

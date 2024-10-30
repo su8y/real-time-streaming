@@ -16,16 +16,16 @@ public class RedisConfig {
 
     @Value("${spring.data.redis.port}")
     private Integer port;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);
     }
 
     @Bean
-    public RedisTemplate<?,?> redisTemplate() {
-        RedisTemplate<?,?> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
-        // redisTemplate.setDefaultSerializer(StringRedisSerializer.UTF_8); // Value Type 때문에 주석
         redisTemplate.setKeySerializer(StringRedisSerializer.UTF_8);
         redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class));
 
