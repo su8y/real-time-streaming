@@ -17,3 +17,7 @@ spring:
               - POST
               - PUT
               - DELETE
+  data:
+    redis:
+      port: 6379
+      host: localhost
