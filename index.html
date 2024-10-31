@@ -10,7 +10,7 @@
 <body class="bg-light">
 <div class="container text-center p-4 h-100">
     <div class="row">
-        <div class="col-3">
+        <div class="col-4 col-sm-6">
             <select id="fetchURL" class="form-select">
                 <option selected value="http://127.0.0.1:8000/stream/output">fastAPI</option>
                 <option value="http://localhost:8080/ss/stream/rest/output">Spring(RestAPI, StreamingResponseBody.class)</option>
@@ -18,7 +18,7 @@
                 <option value="http://localhost:8080/ss/stream/rest/output2">Spring(RestAPI, ResponseBodyEmitter.class)</option>
             </select>
         </div>
-        <div class="col-8">
+        <div class="col-8 col-sm-6">
             <h4 id="generate-button" onclick="fetchStream()" class="btn btn-outline-info w-100 fw-semibold">
                 Test Real Time Steaming
             </h4>
