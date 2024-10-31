@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class RouteConfig {
     @Bean
     public GatewayFilter userDuplicateFilter() {
-        return new UserDuplicateFilter().apply(new UserDuplicateFilter.Config());
+        return new UserDuplicateFilter();
     }
 
     @Bean

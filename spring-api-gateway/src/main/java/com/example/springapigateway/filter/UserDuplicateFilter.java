@@ -12,22 +12,24 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 
-public class UserDuplicateFilter extends AbstractGatewayFilterFactory<UserDuplicateFilter.Config> {
+public class UserDuplicateFilter implements GatewayFilter,Ordered {
     private static final Logger log = LoggerFactory.getLogger(UserDuplicateFilter.class);
 
 
     @Override
-    public GatewayFilter apply(Config config) {
-        return new OrderedGatewayFilter((exchange,chain)->{
-            log.info("Custom Pre filter: request id -> {}", exchange.getRequest().getId());
-            return chain.filter(exchange).then(Mono.fromRunnable(() ->
-                    log.info("Custom Post filter: request id -> {}", exchange.getRequest().getId()))
-            );
-        },-3);
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        log.info("Custom Pre filter: request id -> {}", exchange.getRequest().getId());
+        return chain.filter(exchange).then(Mono.fromRunnable(() ->
+                log.info("Custom Post filter: request id -> {}", exchange.getRequest().getId()))
+        );
+    }
+
+    @Override
+    public int getOrder() {
+        return -2;
     }
 
     public static class Config{
-
     }
 
 }
